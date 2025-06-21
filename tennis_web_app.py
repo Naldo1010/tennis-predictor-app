@@ -4,26 +4,49 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 from io import BytesIO
+import requests
 
-# Mock player statistics
-mock_stats = {
-    "Stewart Aronson": {
-        "Ranking": 120,
-        "Recent Win Rate": 0.75,
-        "Surface Win Rate": 0.70,
-        "Head-to-Head Wins": 3,
-        "First Serve Win %": 0.68,
-        "Break Point Conversion %": 0.55
-    },
-    "Davis Taylor": {
-        "Ranking": 180,
-        "Recent Win Rate": 0.55,
-        "Surface Win Rate": 0.50,
-        "Head-to-Head Wins": 1,
-        "First Serve Win %": 0.60,
-        "Break Point Conversion %": 0.45
-    }
-}
+import requests
+
+# Function to fetch player stats from the API
+def fetch_player_stats(player_name):
+    api_key = 'YOUR_API_KEY'  # Replace with your actual API key
+    url = f'https://api-sports.io/players?name={player_name}'
+    headers = {
+        'x-rapidapi-key': api_key,
+        'x-rapidapi-host': 'api-sports.io'
+    }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    
+    if data['results']:
+        player_data = data['results'][0]
+        return {
+            "Ranking": player_data['ranking'],
+            "Recent Win Rate": player_data['recent_win_rate'],
+            "Surface Win Rate": player_data['surface_win_rate'],
+            "Head-to-Head Wins": player_data['head_to_head_wins'],
+            "First Serve Win %": player_data['first_serve_win_percentage'],
+            "Break Point Conversion %": player_data['break_point_conversion_percentage']
+        }
+    else:
+        return None
+
+# Prompt user for player names
+player_names = input("Enter the names of the tennis players, separated by commas: ").split(',')
+
+# Initialize mock player statistics
+mock_stats = {}
+
+# Fetch and update stats for each player
+for player_name in player_names:
+    player_name = player_name.strip()
+    mock_stats[player_name] = fetch_player_stats(player_name)
+
+# Print updated stats
+print(mock_stats)
+
+
 
 # Logistic regression model coefficients (mock)
 coefficients = {
